@@ -1,35 +1,94 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import useAuthStore from "./store/authStore";
+
+// Layout imports
+import AppLayout from "./components/layout/AppLayout";
+
+// Auth pages
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+
+// Dashboard and market pages
+import Dashboard from "./pages/Dashboard";
+import Market from "./pages/Market";
+import Favorites from "./pages/Favorites";
+
+// Guards for protected routes
+const PrivateRoute = ({ element }: { element: JSX.Element }) => {
+  const { isAuthenticated, isLoading } = useAuthStore();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Cargando...
+      </div>
+    );
+  }
+
+  return isAuthenticated ? element : <Navigate to="/login" />;
+};
+
+// Guards for public-only routes (redirect if already logged in)
+const PublicRoute = ({ element }: { element: JSX.Element }) => {
+  const { isAuthenticated, isLoading } = useAuthStore();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Cargando...
+      </div>
+    );
+  }
+
+  return isAuthenticated ? <Navigate to="/dashboard" /> : element;
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { fetchCurrentUser } = useAuthStore();
+
+  // Check if user is authenticated on app load
+  useEffect(() => {
+    fetchCurrentUser();
+  }, [fetchCurrentUser]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<PublicRoute element={<Login />} />} />
+        <Route
+          path="/register"
+          element={<PublicRoute element={<Register />} />}
+        />
+
+        {/* Protected routes */}
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<Navigate to="/dashboard" />} />
+          <Route
+            path="dashboard"
+            element={<PrivateRoute element={<Dashboard />} />}
+          />
+          <Route
+            path="market"
+            element={<PrivateRoute element={<Market />} />}
+          />
+          <Route
+            path="favorites"
+            element={<PrivateRoute element={<Favorites />} />}
+          />
+        </Route>
+
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
