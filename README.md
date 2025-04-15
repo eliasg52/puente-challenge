@@ -1,132 +1,193 @@
-# Financial Markets Tracking Application
+# Aplicación de Seguimiento de Mercados Financieros
 
-A full-stack web application for tracking financial markets and managing investment portfolios.
+Una aplicación web full-stack para seguimiento de mercados financieros y gestión de carteras de inversión.
 
-## Features
+## Características
 
-- User authentication with JWT
-- Financial market data monitoring
-- Favoriting instruments
-- Admin and user roles
-- Responsive design
+- Autenticación de usuarios con JWT
+- Monitoreo de datos de mercados financieros
+- Marcado de instrumentos como favoritos
+- Roles de administrador y usuario
+- Diseño responsive
+- Actualización automática de datos cada 5 minutos
 
-## Tech Stack
+## Stack Tecnológico
 
 ### Frontend
 
-- React with TypeScript
-- Tailwind CSS for styling
-- Zustand for state management
-- React Router for navigation
+- React con TypeScript
+- Tailwind CSS para estilos
+- Zustand para gestión de estado
+- React Router para navegación
 
 ### Backend
 
-- Node.js with Express
+- Node.js con Express
 - TypeScript
-- PostgreSQL for database
-- JWT for authentication
-- RESTful API design
+- PostgreSQL para base de datos
+- JWT para autenticación
+- Diseño API RESTful
+- Swagger para documentación de API
 
-### Infrastructure
+### Infraestructura
 
-- Docker for containerization of PostgreSQL
-- Alpha Vantage API for financial data
+- Docker para contenedorización de PostgreSQL
+- API CoinGecko para datos financieros
 
-## Getting Started
+## Comenzando
 
-### Prerequisites
+### Prerrequisitos
 
-- Node.js v16+ and npm
-- Docker and Docker Compose
+- Node.js v16+ y npm
+- Docker y Docker Compose
 
-### Installation
+### Instalación
 
-1. Clone the repository:
+1. Clona el repositorio:
 
 ```bash
-git clone <repository-url>
+git clone <url-del-repositorio>
 cd puente-challenge
 ```
 
-2. Start the PostgreSQL database:
+2. Inicia la base de datos PostgreSQL:
 
 ```bash
 docker-compose up -d
 ```
 
-3. Install backend dependencies:
+3. Instala las dependencias del backend:
 
 ```bash
 cd server
 npm install
 ```
 
-4. Set up environment variables:
+4. Configura las variables de entorno:
 
 ```bash
-# Create a .env file in the server directory using .env.example as a template
+# Crea un archivo .env en el directorio server usando .env.example como plantilla
 cp .env.example .env
-# Edit the .env file with your configuration
+# Edita el archivo .env con tu configuración
 ```
 
-5. Install frontend dependencies:
+5. Instala las dependencias del frontend:
 
 ```bash
 cd ../client
 npm install
 ```
 
-6. Start the development servers:
+6. Inicia los servidores de desarrollo:
 
-For the backend:
+Para el backend:
 
 ```bash
 cd ../server
 npm run dev
 ```
 
-For the frontend:
+Para el frontend:
 
 ```bash
 cd ../client
 npm run dev
 ```
 
-7. Access the application:
+7. Accede a la aplicación:
 
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
 
-## Project Structure
+## Variables de Entorno
+
+### Backend (server/.env)
+
+```
+PORT=3000
+NODE_ENV=development
+USE_DB=true
+
+# Configuración de la base de datos
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=financial_markets
+DB_USER=postgres
+DB_PASSWORD=postgres
+
+# Configuración JWT
+JWT_SECRET=your_jwt_secret_key_here
+JWT_EXPIRES_IN=1d
+```
+
+### Frontend (client/.env)
+
+```
+VITE_API_URL=http://localhost:3000/api
+VITE_APP_TITLE=Puente Inversiones
+```
+
+## Documentación de la API con Swagger
+
+La documentación interactiva de la API está disponible en la ruta `/api-docs` cuando el servidor está en ejecución:
+
+1. Inicia el servidor:
+
+```bash
+cd server
+npm run dev
+```
+
+2. Abre la documentación en tu navegador:
+
+```
+http://localhost:3000/api-docs
+```
+
+3. En la interfaz de Swagger puedes:
+   - Ver todos los endpoints disponibles
+   - Probar los endpoints directamente desde la interfaz
+   - Ver los esquemas de datos y modelos
+   - Autenticarte para probar endpoints protegidos
+
+Para autenticarte en Swagger:
+
+1. Usa el endpoint `/auth/login` para obtener un token
+2. Haz clic en el botón "Authorize" en la parte superior de la página
+3. Ingresa tu token en el formato: `Bearer <tu-token>`
+4. Ahora puedes probar los endpoints protegidos
+
+## Estructura del Proyecto
 
 ```
 puente-challenge/
-├── client/                  # Frontend React application
+├── client/                  # Aplicación frontend con React
 │   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── pages/           # Page components
-│   │   ├── services/        # API service functions
-│   │   ├── hooks/           # Custom React hooks
-│   │   ├── store/           # State management (Zustand)
-│   │   ├── types/           # TypeScript interfaces and types
-│   │   └── utils/           # Utility functions
+│   │   ├── components/      # Componentes UI reutilizables
+│   │   ├── pages/           # Componentes de página
+│   │   ├── services/        # Funciones de servicio API
+│   │   ├── hooks/           # Hooks personalizados de React
+│   │   ├── store/           # Gestión de estado (Zustand)
+│   │   ├── types/           # Interfaces y tipos de TypeScript
+│   │   └── utils/           # Funciones de utilidad
 │   └── ...
-├── server/                  # Backend Express application
+├── server/                  # Aplicación backend con Express
 │   ├── src/
-│   │   ├── controllers/     # API controllers
-│   │   ├── models/          # Database models
-│   │   ├── routes/          # API routes
-│   │   ├── middlewares/     # Express middlewares
-│   │   ├── services/        # Business logic and external API integrations
-│   │   └── utils/           # Utility functions
+│   │   ├── controllers/     # Controladores API
+│   │   ├── models/          # Modelos de base de datos
+│   │   ├── routes/          # Rutas API
+│   │   ├── middlewares/     # Middlewares de Express
+│   │   ├── services/        # Lógica de negocio e integraciones API externas
+│   │   ├── docs/            # Documentación Swagger
+│   │   └── utils/           # Funciones de utilidad
 │   └── ...
-└── docker-compose.yml       # Docker configuration
+└── docker-compose.yml       # Configuración de Docker
 ```
 
-## API Documentation
+## Despliegue
 
-API documentation is available at `/api-docs` when the server is running in development mode.
+Para instrucciones detalladas sobre cómo desplegar la aplicación en producción, consulta el archivo `DEPLOYMENT.md`.
 
-## License
+## Licencia
 
-This project is part of a technical challenge and is not licensed for public use.
+Este proyecto es parte de un desafío técnico y no está licenciado para uso público.
