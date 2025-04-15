@@ -46,7 +46,7 @@ Una aplicaci√≥n web full-stack para seguimiento de mercados financieros y gesti√
 1. Clona el repositorio:
 
 ```bash
-git clone <url-del-repositorio>
+git clone https://github.com/eliasg52/puente-challenge
 cd puente-challenge
 ```
 
