@@ -3,15 +3,26 @@ import { useStocks } from "../hooks/useMarket";
 import useAuthStore from "../store/authStore";
 import { Stock } from "../services/market.service";
 import { Link } from "react-router-dom";
+import { usePeriodicRefresh } from "../hooks/usePeriodicRefresh";
 
 // Componente para el dashboard
 const Dashboard = () => {
   const { user } = useAuthStore();
-  const { data, isLoading } = useStocks();
+  const { data, isLoading, refetch: refetchStocks } = useStocks();
   const [greeting, setGreeting] = useState("");
   const [topPerformers, setTopPerformers] = useState<Stock[]>([]);
   const [worstPerformers, setWorstPerformers] = useState<Stock[]>([]);
   const [showMockDataAlert, setShowMockDataAlert] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  // Configurar la actualización periódica cada 5 minutos
+  usePeriodicRefresh(() => {
+    console.log(
+      `[${new Date().toISOString()}] Actualizando dashboard periódicamente...`
+    );
+    refetchStocks();
+    setLastUpdated(new Date());
+  }, 5 * 60 * 1000);
 
   useEffect(() => {
     const getGreeting = () => {
@@ -63,6 +74,11 @@ const Dashboard = () => {
   return (
     <div className="py-6">
       <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+      {lastUpdated && (
+        <div className="text-xs text-gray-400 mt-1">
+          Última actualización: {lastUpdated.toLocaleTimeString()}
+        </div>
+      )}
 
       <div className="mt-6 bg-[#171924] rounded-lg shadow-md p-6 border border-gray-800">
         <div className="mb-6">

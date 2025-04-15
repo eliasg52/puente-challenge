@@ -4,6 +4,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger.json";
+import { startPeriodicUpdates } from "./services/coingecko.service";
 // import { join } from "path";
 
 // Load environment variables
@@ -41,4 +42,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
   console.log(`Documentación disponible en http://localhost:${PORT}/api-docs`);
+
+  // Iniciar actualizaciones periódicas de datos
+  startPeriodicUpdates();
 });

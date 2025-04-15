@@ -26,6 +26,12 @@ const POPULAR_CRYPTOS = [
 let isRateLimited = false;
 let rateLimitResetTime = 0;
 
+// Intervalo de actualización de datos (5 minutos en ms)
+const UPDATE_INTERVAL = 5 * 60 * 1000;
+
+// Variable para almacenar el ID del intervalo
+let updateIntervalId: NodeJS.Timeout | null = null;
+
 // Función para comprobar si estamos en rate limit
 const checkRateLimit = (): boolean => {
   if (!isRateLimited) return false;
@@ -52,16 +58,73 @@ const setRateLimit = (retryAfterSeconds: number = 60): void => {
 };
 
 /**
- * Obtiene la lista de criptomonedas populares con datos actualizados
+ * Iniciar la actualización periódica de datos cada 5 minutos
  */
-export const getPopularCryptos = async (): Promise<Stock[]> => {
+export const startPeriodicUpdates = (): void => {
+  if (updateIntervalId) {
+    console.log("Las actualizaciones periódicas ya están en funcionamiento");
+    return;
+  }
+
+  console.log(
+    `Iniciando actualizaciones periódicas cada ${
+      UPDATE_INTERVAL / 1000 / 60
+    } minutos`
+  );
+
+  // Actualizar inmediatamente al iniciar
+  refreshData();
+
+  // Configurar el intervalo
+  updateIntervalId = setInterval(refreshData, UPDATE_INTERVAL);
+};
+
+/**
+ * Detener la actualización periódica de datos
+ */
+export const stopPeriodicUpdates = (): void => {
+  if (updateIntervalId) {
+    clearInterval(updateIntervalId);
+    updateIntervalId = null;
+    console.log("Actualizaciones periódicas detenidas");
+  }
+};
+
+/**
+ * Función para refrescar los datos periódicamente
+ */
+const refreshData = async (): Promise<void> => {
+  try {
+    console.log(
+      `[${new Date().toISOString()}] Actualizando datos periódicamente...`
+    );
+    // Forzar actualización ignorando la caché
+    await getPopularCryptos(true);
+    console.log("Actualización periódica completada con éxito");
+  } catch (error) {
+    console.error("Error durante la actualización periódica:", error);
+  }
+};
+
+/**
+ * Obtiene la lista de criptomonedas populares con datos actualizados
+ * @param forceUpdate Si es true, ignora la caché y obtiene datos frescos
+ */
+export const getPopularCryptos = async (
+  forceUpdate: boolean = false
+): Promise<Stock[]> => {
   const cacheKey = "popular_cryptos";
 
-  // Verificar si los datos están en caché
+  // Verificar si los datos están en caché y no se está forzando la actualización
   const cachedData = cache.get<Stock[]>(cacheKey);
-  if (cachedData) {
+  if (cachedData && !forceUpdate) {
     console.log("[CACHE HIT] Obteniendo criptomonedas populares de caché");
     return cachedData;
+  }
+
+  // Si se está forzando la actualización, vamos a ignorar el caché
+  if (forceUpdate) {
+    console.log("[FORCE UPDATE] Ignorando caché y actualizando datos");
   }
 
   // Verificar si estamos en rate limit

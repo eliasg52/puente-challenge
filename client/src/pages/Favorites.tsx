@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useFavoriteStocks, useToggleFavorite } from "../hooks/useMarket";
 import { Stock } from "../services/market.service";
 import FavoriteButton from "../components/FavoriteButton";
+import { usePeriodicRefresh } from "../hooks/usePeriodicRefresh";
 
 const Favorites = () => {
   const {
@@ -14,6 +15,16 @@ const Favorites = () => {
   // Estado local para manejar la lista de favoritos
   const [localFavorites, setLocalFavorites] = useState<Stock[]>([]);
   const [showMockDataAlert, setShowMockDataAlert] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  // Configurar la actualización periódica cada 5 minutos
+  usePeriodicRefresh(() => {
+    console.log(
+      `[${new Date().toISOString()}] Actualizando favoritos periódicamente...`
+    );
+    refetchFavorites();
+    setLastUpdated(new Date());
+  }, 5 * 60 * 1000);
 
   // Actualizar el estado local cuando llegan los datos
   useEffect(() => {
@@ -125,6 +136,11 @@ const Favorites = () => {
     <div className="py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white">Mis Favoritos</h1>
+        {lastUpdated && (
+          <div className="text-xs text-gray-400 mt-1">
+            Última actualización: {lastUpdated.toLocaleTimeString()}
+          </div>
+        )}
       </div>
 
       {showMockDataAlert && (
