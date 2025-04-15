@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
 @layer base {
-  /* You can add any custom base styles here */
+  body {
+    @apply bg-[#0d1421] text-white m-0 p-0;
+  }
+
+  a {
+    @apply text-blue-400 hover:text-blue-300;
+  }
+
+  button {
+    @apply hover:opacity-90 transition-opacity;
+  }
+}
+
+@layer components {
+  .coin-row {
+    @apply border-b border-gray-800 hover:bg-gray-900/50 transition-colors;
+  }
+
+  .coin-price-up {
+    @apply text-green-500;
+  }
+
+  .coin-price-down {
+    @apply text-red-500;
+  }
+
+  .cmc-button {
+    @apply bg-[#3861fb] text-white px-4 py-2 rounded-md font-medium;
+  }
 }

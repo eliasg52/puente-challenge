@@ -1,8 +1,87 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.header-stats {
+  background-color: #171924;
+  padding: 0.25rem 1rem;
+  font-size: 0.75rem;
+  color: #a1a7bb;
+}
+
+.header-stats strong {
+  color: white;
+}
+
+.header-stats-positive {
+  color: #16c784;
+}
+
+.header-stats-negative {
+  color: #ea3943;
+}
+
+.navbar {
+  background-color: #171924;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: white;
+}
+
+.coin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.coin-table th {
+  background-color: #171924;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #a1a7bb;
+  padding: 1rem;
+  text-transform: uppercase;
+}
+
+.coin-table td {
+  padding: 1rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #222531;
+}
+
+.coin-name {
+  font-weight: 500;
+  color: white;
+}
+
+.coin-symbol {
+  color: #a1a7bb;
+}
+
+.trending-card {
+  background-color: #171924;
+  border-radius: 0.5rem;
+  border: 1px solid #222531;
+}
+
+.trending-card-header {
+  font-weight: 600;
+  padding: 1rem;
+  border-bottom: 1px solid #222531;
+}
+
+.market-stats-card {
+  background-color: #171924;
+  border-radius: 0.5rem;
+  border: 1px solid #222531;
+  padding: 1rem;
 }
 
 .logo {
@@ -39,4 +118,25 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.coin-price-up {
+  color: #16c784;
+}
+
+.coin-price-down {
+  color: #ea3943;
+}
+
+/* Estilos para mantener consistencia en cards */
+.card-dark {
+  background-color: #171924;
+  border: 1px solid #222531;
+  border-radius: 0.5rem;
+}
+
+.card-darker {
+  background-color: #0d1421;
+  border: 1px solid #171924;
+  border-radius: 0.5rem;
 }

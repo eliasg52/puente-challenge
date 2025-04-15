@@ -1,10 +1,10 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
+import Navbar from "../layout/Navbar";
+import Sidebar from "../layout/Sidebar";
 
 const AppLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-[#0d1421]">
       <Navbar />
       <div className="flex">
         <Sidebar />

@@ -27,33 +27,11 @@ export interface Stock {
   isFavorite?: boolean;
 }
 
-// Función para transformar la respuesta de la API
-const transformQuoteToStock = (
-  symbol: string,
-  name: string,
-  quoteData: any
-): Stock => {
-  return {
-    id: symbol,
-    symbol,
-    name,
-    price: parseFloat(quoteData["05. price"] || quoteData.price || "0"),
-    change: parseFloat(quoteData["09. change"] || quoteData.change || "0"),
-    changePercent: parseFloat(
-      (
-        quoteData["10. change percent"] ||
-        quoteData.changePercent ||
-        "0%"
-      ).replace("%", "")
-    ),
-    high: parseFloat(quoteData["03. high"] || quoteData.high || "0"),
-    low: parseFloat(quoteData["04. low"] || quoteData.low || "0"),
-    volume: parseInt(quoteData["06. volume"] || quoteData.volume || "0", 10),
-  };
-};
-
 // Obtener un listado de stocks (simulado para el desafío)
-export const getStocks = async (): Promise<Stock[]> => {
+export const getStocks = async (): Promise<{
+  stocks: Stock[];
+  isFromMockData: boolean;
+}> => {
   // Lista predefinida de símbolos para el desafío
   const defaultStocks = [
     { symbol: "AAPL", name: "Apple Inc." },
@@ -69,25 +47,36 @@ export const getStocks = async (): Promise<Stock[]> => {
   ];
 
   try {
-    // En un entorno real, esto vendría de una API externa
     // Para el desafío, obtenemos datos de nuestro backend que hace de proxy
     const response = await apiClient.get<{ stocks: Stock[] }>("/market/stocks");
-    return response.stocks;
+
+    // Convertir explícitamente isFavorite a valor booleano y preservar el resto de datos
+    return {
+      stocks: response.stocks.map((stock) => ({
+        ...stock,
+        isFavorite: !!stock.isFavorite,
+      })),
+      isFromMockData: false,
+    };
   } catch (error) {
     console.error("Error obteniendo lista de stocks:", error);
 
     // En caso de error, generamos datos ficticios para la demo
-    return defaultStocks.map((stock) => ({
-      id: stock.symbol,
-      symbol: stock.symbol,
-      name: stock.name,
-      price: Math.random() * 1000,
-      change: Math.random() * 100 - 50,
-      changePercent: Math.random() * 10 - 5,
-      high: Math.random() * 1200,
-      low: Math.random() * 800,
-      volume: Math.floor(Math.random() * 10000000),
-    }));
+    return {
+      stocks: defaultStocks.map((stock) => ({
+        id: stock.symbol,
+        symbol: stock.symbol,
+        name: stock.name,
+        price: Math.random() * 1000,
+        change: Math.random() * 100 - 50,
+        changePercent: Math.random() * 10 - 5,
+        high: Math.random() * 1200,
+        low: Math.random() * 800,
+        volume: Math.floor(Math.random() * 10000000),
+        isFavorite: false,
+      })),
+      isFromMockData: true,
+    };
   }
 };
 
@@ -118,15 +107,31 @@ export const getStockDetail = async (symbol: string): Promise<Stock> => {
 };
 
 // Obtener los stocks favoritos del usuario
-export const getFavoriteStocks = async (): Promise<Stock[]> => {
+export const getFavoriteStocks = async (): Promise<{
+  stocks: Stock[];
+  isFromMockData: boolean;
+}> => {
   try {
     const response = await apiClient.get<{ stocks: Stock[] }>(
       "/market/favorites"
     );
-    return response.stocks;
+
+    // Si no hay favoritos retornamos un array vacío
+    if (!response.stocks || response.stocks.length === 0) {
+      return { stocks: [], isFromMockData: false };
+    }
+
+    // Asegurarnos que isFavorite es true para todos los elementos
+    return {
+      stocks: response.stocks.map((stock) => ({
+        ...stock,
+        isFavorite: true,
+      })),
+      isFromMockData: false,
+    };
   } catch (error) {
     console.error("Error obteniendo favoritos:", error);
-    return [];
+    return { stocks: [], isFromMockData: true };
   }
 };
 
