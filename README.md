@@ -1,4 +1,4 @@
-# Aplicación de Seguimiento de Mercados Financieros
+# Puentes Challenge 📈
 
 Una aplicación web full-stack para seguimiento de mercados financieros y gestión de carteras de inversión.
 
@@ -66,9 +66,26 @@ npm install
 4. Configura las variables de entorno:
 
 ```bash
-# Crea un archivo .env en el directorio server usando .env.example como plantilla
-cp .env.example .env
-# Edita el archivo .env con tu configuración
+# Crea un archivo .env en el directorio server
+```
+
+El archivo .env debe contener lo siguiente:
+
+```
+PORT=3000
+NODE_ENV=development
+USE_DB=true
+
+# Configuración de la base de datos
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=financial_markets
+DB_USER=postgres
+DB_PASSWORD=postgres
+
+# Configuración JWT
+JWT_SECRET=your_jwt_secret_key_here
+JWT_EXPIRES_IN=1d
 ```
 
 5. Instala las dependencias del frontend:
@@ -99,33 +116,7 @@ npm run dev
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
 
-## Variables de Entorno
-
-### Backend (server/.env)
-
-```
-PORT=3000
-NODE_ENV=development
-USE_DB=true
-
-# Configuración de la base de datos
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=financial_markets
-DB_USER=postgres
-DB_PASSWORD=postgres
-
-# Configuración JWT
-JWT_SECRET=your_jwt_secret_key_here
-JWT_EXPIRES_IN=1d
-```
-
-### Frontend (client/.env)
-
-```
-VITE_API_URL=http://localhost:3000/api
-VITE_APP_TITLE=Puente Inversiones
-```
+El frontend utiliza las variables de entorno proporcionadas por Vite en tiempo de compilación. No es necesario crear un archivo .env en el cliente para desarrollo local.
 
 ## Documentación de la API con Swagger
 
@@ -183,10 +174,6 @@ puente-challenge/
 │   └── ...
 └── docker-compose.yml       # Configuración de Docker
 ```
-
-## Despliegue
-
-Para instrucciones detalladas sobre cómo desplegar la aplicación en producción, consulta el archivo `DEPLOYMENT.md`.
 
 ## Licencia
 
