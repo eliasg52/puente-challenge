@@ -52,7 +52,13 @@ cd puente-challenge
 
 2. Inicia la base de datos PostgreSQL:
 
+**Importante**: Antes de ejecutar Docker Compose, asegúrate de tener activo Docker Desktop (en Windows/Mac) o Colima (en Mac). Sin un runtime de Docker activo, los comandos de Docker no funcionarán.
+
 ```bash
+# En Mac con Colima, primero ejecuta:
+colima start
+
+# Luego inicia la base de datos:
 docker-compose up -d
 ```
 
@@ -84,7 +90,7 @@ DB_USER=postgres
 DB_PASSWORD=postgres
 
 # Configuración JWT
-JWT_SECRET=your_jwt_secret_key_here
+JWT_SECRET=puente_jwt_secret_key
 JWT_EXPIRES_IN=1d
 ```
 
