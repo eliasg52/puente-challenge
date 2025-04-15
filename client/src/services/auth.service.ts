@@ -1,5 +1,10 @@
 import apiClient from "./api-client";
-import { AuthResponse, LoginCredentials, RegisterData } from "../types/auth";
+import {
+  AuthResponse,
+  User,
+  LoginCredentials,
+  RegisterData,
+} from "../types/auth";
 import useAuthStore from "../store/authStore";
 
 export const login = async (
@@ -63,4 +68,14 @@ export const logout = (): void => {
     isLoading: false,
     error: null,
   });
+};
+
+// Admin services
+export const getAllUsers = async (): Promise<{ users: User[] }> => {
+  const response = await apiClient.get<{ users: User[] }>("/auth/users");
+  return response;
+};
+
+export const deleteUser = async (userId: number): Promise<void> => {
+  await apiClient.delete(`/auth/users/${userId}`);
 };

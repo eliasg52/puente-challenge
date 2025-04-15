@@ -122,3 +122,47 @@ export const getCurrentUser = async (
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Get all users (admin only)
+export const getAllUsers = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const users = await UserModel.getAllUsers();
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error("Get all users error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Delete user by ID (admin only)
+export const deleteUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = parseInt(req.params.id);
+
+    // Don't allow self-deletion
+    if (userId === (req as any).userId) {
+      res.status(400).json({ message: "You cannot delete your own account" });
+      return;
+    }
+
+    const success = await UserModel.deleteUser(userId);
+
+    if (!success) {
+      res.status(400).json({
+        message: "User not found or cannot delete the last admin user",
+      });
+      return;
+    }
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

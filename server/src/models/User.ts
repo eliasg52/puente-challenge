@@ -36,6 +36,11 @@ export interface UserResponse {
   updated_at: Date;
 }
 
+// Admin user credentials
+const ADMIN_EMAIL = "admin@example.com";
+const ADMIN_PASSWORD = "admin123";
+const ADMIN_NAME = "Administrador";
+
 class UserModel {
   private pool: Pool | null = null;
   private users: User[] = [];
@@ -57,8 +62,8 @@ class UserModel {
         password: process.env.DB_PASSWORD,
       });
 
-      // Create the users table if it doesn't exist
-      this.initTable();
+      // Create the users table if it doesn't exist and ensure admin user exists
+      this.initDatabase();
     } else {
       console.log("Using in-memory user store for development");
 
@@ -70,19 +75,27 @@ class UserModel {
   // Create a default admin user for development
   private async createDefaultUser() {
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash("admin123", salt);
+    const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, salt);
 
     this.users.push({
       id: this.nextId++,
-      name: "Admin User",
-      email: "admin@example.com",
+      name: ADMIN_NAME,
+      email: ADMIN_EMAIL,
       password: hashedPassword,
       role: UserRole.ADMIN,
       created_at: new Date(),
       updated_at: new Date(),
     });
 
-    console.log("Created default admin user: admin@example.com / admin123");
+    console.log(
+      `Created default admin user: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`
+    );
+  }
+
+  // Initialize the database and ensure admin user exists
+  private async initDatabase(): Promise<void> {
+    await this.initTable();
+    await this.ensureAdminUser();
   }
 
   // Initialize the users table
@@ -106,6 +119,44 @@ class UserModel {
       console.log("Users table created or already exists");
     } catch (error) {
       console.error("Error creating users table:", error);
+    }
+  }
+
+  // Ensure admin user exists in the database
+  private async ensureAdminUser(): Promise<void> {
+    if (!this.pool) return;
+
+    try {
+      // Check if admin user exists
+      const checkQuery = "SELECT * FROM users WHERE email = $1;";
+      const result = await this.pool.query(checkQuery, [ADMIN_EMAIL]);
+
+      if (result.rows.length === 0) {
+        // Admin user doesn't exist, create it
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, salt);
+
+        const insertQuery = `
+          INSERT INTO users (name, email, password, role)
+          VALUES ($1, $2, $3, $4)
+          RETURNING id;
+        `;
+
+        await this.pool.query(insertQuery, [
+          ADMIN_NAME,
+          ADMIN_EMAIL,
+          hashedPassword,
+          UserRole.ADMIN,
+        ]);
+
+        console.log(
+          `Admin user created in database: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`
+        );
+      } else {
+        console.log(`Admin user already exists in database: ${ADMIN_EMAIL}`);
+      }
+    } catch (error) {
+      console.error("Error ensuring admin user exists:", error);
     }
   }
 
@@ -222,6 +273,91 @@ class UserModel {
     }
 
     return null;
+  }
+
+  // Get all users (for admin purposes)
+  async getAllUsers(): Promise<UserResponse[]> {
+    if (this.useInMemory) {
+      return this.users.map((user) => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword as UserResponse;
+      });
+    }
+
+    if (!this.pool) return [];
+
+    const query = `
+      SELECT id, name, email, role, created_at, updated_at
+      FROM users
+      ORDER BY created_at DESC;
+    `;
+
+    try {
+      const result = await this.pool.query(query);
+      return result.rows;
+    } catch (error) {
+      console.error("Error getting all users:", error);
+      return [];
+    }
+  }
+
+  // Delete user by ID (admin only)
+  async deleteUser(id: number): Promise<boolean> {
+    if (this.useInMemory) {
+      const index = this.users.findIndex((u) => u.id === id);
+
+      if (index === -1) return false;
+
+      // Don't allow deleting the last admin
+      const adminCount = this.users.filter(
+        (u) => u.role === UserRole.ADMIN
+      ).length;
+      const userToDelete = this.users[index];
+
+      if (adminCount <= 1 && userToDelete.role === UserRole.ADMIN) {
+        return false;
+      }
+
+      this.users.splice(index, 1);
+      return true;
+    }
+
+    if (!this.pool) return false;
+
+    // First check if user exists and is admin
+    const checkQuery = `
+      SELECT role FROM users WHERE id = $1;
+    `;
+
+    try {
+      // Get admin count
+      const adminCountQuery = `
+        SELECT COUNT(*) FROM users WHERE role = '${UserRole.ADMIN}';
+      `;
+      const adminResult = await this.pool.query(adminCountQuery);
+      const adminCount = parseInt(adminResult.rows[0].count);
+
+      // Check user role
+      const checkResult = await this.pool.query(checkQuery, [id]);
+      if (checkResult.rows.length === 0) return false;
+
+      const userRole = checkResult.rows[0].role;
+
+      // Don't allow deleting the last admin
+      if (adminCount <= 1 && userRole === UserRole.ADMIN) {
+        return false;
+      }
+
+      // Proceed with deletion
+      const deleteQuery = `
+        DELETE FROM users WHERE id = $1;
+      `;
+      await this.pool.query(deleteQuery, [id]);
+      return true;
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      return false;
+    }
   }
 }
 

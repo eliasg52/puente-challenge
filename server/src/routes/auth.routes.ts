@@ -3,8 +3,10 @@ import {
   register,
   login,
   getCurrentUser,
+  getAllUsers,
+  deleteUser,
 } from "../controllers/auth.controller";
-import { authenticateToken } from "../middlewares/auth.middleware";
+import { authenticateToken, isAdmin } from "../middlewares/auth.middleware";
 
 const router = Router();
 
@@ -14,5 +16,9 @@ router.post("/login", login);
 
 // Protected routes
 router.get("/me", authenticateToken, getCurrentUser);
+
+// Admin routes
+router.get("/users", authenticateToken, isAdmin, getAllUsers);
+router.delete("/users/:id", authenticateToken, isAdmin, deleteUser);
 
 export default router;

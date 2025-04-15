@@ -116,6 +116,15 @@ npm run dev
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
 
+### Credenciales de Usuario Administrador
+
+La aplicación crea automáticamente un usuario administrador cuando se inicia por primera vez:
+
+- **Email**: `admin@example.com`
+- **Contraseña**: `admin123`
+
+Puedes usar estas credenciales para acceder a todas las funcionalidades de la aplicación, incluyendo las exclusivas para administradores como es ver los usuarios o borrarlos.
+
 El frontend utiliza las variables de entorno proporcionadas por Vite en tiempo de compilación. No es necesario crear un archivo .env en el cliente para desarrollo local.
 
 ## Documentación de la API con Swagger

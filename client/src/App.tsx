@@ -18,6 +18,7 @@ import Register from "./pages/auth/Register";
 import Dashboard from "./pages/Dashboard";
 import Market from "./pages/Market";
 import Favorites from "./pages/Favorites";
+import Admin from "./pages/Admin";
 
 // Guards for protected routes
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
@@ -82,6 +83,7 @@ function App() {
             path="favorites"
             element={<PrivateRoute element={<Favorites />} />}
           />
+          <Route path="admin" element={<PrivateRoute element={<Admin />} />} />
         </Route>
 
         {/* Fallback route */}
