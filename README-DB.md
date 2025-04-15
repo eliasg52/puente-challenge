@@ -16,10 +16,7 @@ Este proyecto utiliza PostgreSQL en Docker para almacenar datos. Sigue estas ins
 2. **Iniciar la Base de Datos**
 
    - Ejecuta el script de inicio:
-     ```
-     ./start-db.sh
-     ```
-   - O manualmente con:
+
      ```
      docker compose up -d
      ```
