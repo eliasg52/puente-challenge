@@ -1,4 +1,4 @@
-# Puentes Challenge 📈
+# Puente Challenge 📈
 
 Una aplicación web full-stack para seguimiento de mercados financieros y gestión de carteras de inversión.
 
