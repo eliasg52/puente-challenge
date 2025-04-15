@@ -1,0 +1,469 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Puente Inversiones API",
+    "description": "API para plataforma de seguimiento de mercados financieros",
+    "version": "1.0.0",
+    "contact": {
+      "email": "info@puenteinversiones.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Servidor de desarrollo"
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Operaciones de autenticación"
+    },
+    {
+      "name": "market",
+      "description": "Operaciones de mercado y acciones"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Registrar un nuevo usuario",
+        "description": "Crea una nueva cuenta de usuario en el sistema",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos o correo ya registrado"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Iniciar sesión",
+        "description": "Autenticar un usuario y obtener token JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/UserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Obtener usuario actual",
+        "description": "Obtiene información del usuario autenticado",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Información del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado"
+          }
+        }
+      }
+    },
+    "/market/stocks": {
+      "get": {
+        "tags": ["market"],
+        "summary": "Obtener todas las acciones",
+        "description": "Retorna una lista de todas las acciones disponibles",
+        "responses": {
+          "200": {
+            "description": "Lista de acciones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Stock"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/market/stocks/search": {
+      "get": {
+        "tags": ["market"],
+        "summary": "Buscar acciones",
+        "description": "Busca acciones por nombre o símbolo",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Término de búsqueda"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultados de la búsqueda",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Stock"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/market/stocks/{symbol}": {
+      "get": {
+        "tags": ["market"],
+        "summary": "Obtener información de una acción específica",
+        "description": "Retorna información detallada de una acción por su símbolo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "symbol",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Símbolo de la acción"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Información de la acción",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Stock"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Acción no encontrada"
+          }
+        }
+      }
+    },
+    "/market/favorites": {
+      "get": {
+        "tags": ["market"],
+        "summary": "Obtener acciones favoritas",
+        "description": "Obtiene la lista de acciones favoritas del usuario autenticado",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de acciones favoritas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Stock"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado"
+          }
+        }
+      },
+      "post": {
+        "tags": ["market"],
+        "summary": "Añadir a favoritos",
+        "description": "Añade una acción a la lista de favoritos del usuario",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["stockId"],
+                "properties": {
+                  "stockId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Acción añadida a favoritos"
+          },
+          "401": {
+            "description": "No autenticado"
+          },
+          "404": {
+            "description": "Acción no encontrada"
+          }
+        }
+      }
+    },
+    "/market/favorites/{stockId}": {
+      "delete": {
+        "tags": ["market"],
+        "summary": "Eliminar de favoritos",
+        "description": "Elimina una acción de la lista de favoritos del usuario",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stockId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID de la acción"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Acción eliminada de favoritos"
+          },
+          "401": {
+            "description": "No autenticado"
+          },
+          "404": {
+            "description": "Acción no encontrada en favoritos"
+          }
+        }
+      }
+    },
+    "/market/cache/clear": {
+      "post": {
+        "tags": ["market"],
+        "summary": "Limpiar caché",
+        "description": "Limpia la caché de datos de mercado (solo para administradores)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Caché limpiada correctamente"
+          },
+          "401": {
+            "description": "No autenticado"
+          },
+          "403": {
+            "description": "No autorizado (no es administrador)"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserCreate": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Juan Pérez"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "juan@example.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "password123"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["user", "admin"],
+            "default": "user",
+            "example": "user"
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Juan Pérez"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "juan@example.com"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["user", "admin"],
+            "example": "user"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Stock": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "AAPL"
+          },
+          "symbol": {
+            "type": "string",
+            "example": "AAPL"
+          },
+          "name": {
+            "type": "string",
+            "example": "Apple Inc."
+          },
+          "price": {
+            "type": "number",
+            "format": "float",
+            "example": 150.45
+          },
+          "change": {
+            "type": "number",
+            "format": "float",
+            "example": 2.31
+          },
+          "changePercent": {
+            "type": "number",
+            "format": "float",
+            "example": 1.56
+          },
+          "high": {
+            "type": "number",
+            "format": "float",
+            "example": 152.1
+          },
+          "low": {
+            "type": "number",
+            "format": "float",
+            "example": 149.2
+          },
+          "volume": {
+            "type": "number",
+            "format": "integer",
+            "example": 75000000
+          },
+          "isFavorite": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./docs/swagger.json";
 // import { join } from "path";
 
 // Load environment variables
@@ -21,15 +23,22 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 // Routes
-app.get("/", (_req, res) => {
-  res.json({ message: "Welcome to the Financial Markets API" });
+app.get("/", (req, res) => {
+  res.json({
+    message: "API Puente Inversiones",
+    documentation: `${req.protocol}://${req.get("host")}/api-docs`,
+  });
 });
 
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/market", marketRoutes);
 
+// Documentación Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Documentación disponible en http://localhost:${PORT}/api-docs`);
 });

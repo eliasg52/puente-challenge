@@ -20,6 +20,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@types/swagger-ui-express": "^4.1.8",
     "axios": "^1.8.4",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -28,7 +29,8 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
-    "pg": "^8.14.1"
+    "pg": "^8.14.1",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
