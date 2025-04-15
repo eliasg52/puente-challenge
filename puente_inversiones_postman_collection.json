@@ -1,0 +1,329 @@
+{
+  "info": {
+    "_postman_id": "e95f2b1a-e10f-45de-8b70-f7cf2dbf9f48",
+    "name": "Puente Inversiones API",
+    "description": "Colección para la API de Puente Inversiones, una plataforma de seguimiento de mercados financieros",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Endpoints relacionados con autenticación y usuarios",
+      "item": [
+        {
+          "name": "Registro de usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Usuario Prueba\",\n    \"email\": \"usuario@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Registra un nuevo usuario en el sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "Registro de usuario (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Admin Prueba\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"admin123\",\n    \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Registra un nuevo usuario administrador"
+          },
+          "response": []
+        },
+        {
+          "name": "Iniciar sesión",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"usuario@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Autentica un usuario y devuelve un token JWT"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener usuario actual",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Obtiene información del usuario autenticado actualmente"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener todos los usuarios (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "users"]
+            },
+            "description": "Obtiene la lista de todos los usuarios (solo para administradores)"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar usuario (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "users", "1"]
+            },
+            "description": "Elimina un usuario por su ID (solo para administradores)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Market",
+      "description": "Endpoints relacionados con el mercado y cotizaciones",
+      "item": [
+        {
+          "name": "Obtener todas las acciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/market/stocks",
+              "host": ["{{baseUrl}}"],
+              "path": ["market", "stocks"]
+            },
+            "description": "Obtiene la lista de todas las acciones disponibles"
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar acciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/market/stocks/search?query=bitcoin",
+              "host": ["{{baseUrl}}"],
+              "path": ["market", "stocks", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "bitcoin"
+                }
+              ]
+            },
+            "description": "Busca acciones por término de búsqueda"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener acción por símbolo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/market/stocks/BTC",
+              "host": ["{{baseUrl}}"],
+              "path": ["market", "stocks", "BTC"]
+            },
+            "description": "Obtiene información detallada de una acción por su símbolo"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener favoritos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/market/favorites",
+              "host": ["{{baseUrl}}"],
+              "path": ["market", "favorites"]
+            },
+            "description": "Obtiene las acciones favoritas del usuario autenticado"
+          },
+          "response": []
+        },
+        {
+          "name": "Añadir a favoritos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"stockId\": \"BTC\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/market/favorites",
+              "host": ["{{baseUrl}}"],
+              "path": ["market", "favorites"]
+            },
+            "description": "Añade una acción a la lista de favoritos del usuario"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar de favoritos",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/market/favorites/BTC",
+              "host": ["{{baseUrl}}"],
+              "path": ["market", "favorites", "BTC"]
+            },
+            "description": "Elimina una acción de la lista de favoritos del usuario"
+          },
+          "response": []
+        },
+        {
+          "name": "Limpiar caché (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/market/cache/clear",
+              "host": ["{{baseUrl}}"],
+              "path": ["market", "cache", "clear"]
+            },
+            "description": "Limpia la caché de datos de mercado (solo para administradores)"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Guardar automáticamente los tokens después de iniciar sesión",
+          "if (pm.request.url.toString().includes('/auth/login')) {",
+          "    var jsonResponse = pm.response.json();",
+          "    if (jsonResponse && jsonResponse.token) {",
+          "        // Si es una cuenta de administrador, guardar como adminToken",
+          "        if (jsonResponse.user && jsonResponse.user.role === 'admin') {",
+          "            pm.environment.set('adminToken', jsonResponse.token);",
+          "            console.log('Token de administrador guardado');",
+          "        } else {",
+          "            // Sino, guardar como token normal",
+          "            pm.environment.set('token', jsonResponse.token);",
+          "            console.log('Token de usuario guardado');",
+          "        }",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
